@@ -1,6 +1,5 @@
 import gulp from 'gulp';
 import express from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import imagemin from 'gulp-imagemin';
 import webp from 'gulp-webp';
 import rename from 'gulp-rename';
@@ -22,8 +21,7 @@ import cors from 'cors';
 const browserSync = create();
 const { init, write } = souremaps;
 const { src, series, dest, watch, task } = gulp;
-const argv = _argv;
-const isProduction = argv.prod;
+const isProduction = _argv.prod;
 
 task('serve', function () {
   const app = express();
@@ -75,10 +73,10 @@ task('scripts', function () {
   return src('./src/js/*.js')
     .pipe(concat('bundle.js'))
     .pipe(gulpIf(!isProduction, init()))
-    .pipe(babel({
+    .pipe(gulpIf(isProduction, babel({
       presets: ['@babel/env']
-    }))
-    .pipe(terser())
+    })))
+    .pipe(gulpIf(isProduction, terser()))
     .pipe(gulpIf(!isProduction, write('.')))
     .pipe(rename({ suffix: '.min' }))
     .pipe(dest('./dist/js'))
@@ -90,8 +88,10 @@ task('styles', function () {
     .pipe(concat('styles.css'))
     .pipe(gulpIf(!isProduction, init()))
     .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(gulpIf(!isProduction, write()))
-    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulpIf(!isProduction, write('.')))
+    .pipe(rename({
+      suffix: '.min'
+    }))
     .pipe(dest('./dist/css'))
     .pipe(browserSync.stream());
 });
@@ -111,7 +111,7 @@ task('watch', function () {
     }
   }));
 
-  watch('./src/images/*', series('images'));
+  watch('./src/img/*', series('images'));
   watch('./src/fonts/*', series('fonts'));
   watch('./src/js/*.js', series('scripts'));
   watch('./src/css/*.css', series('styles'));

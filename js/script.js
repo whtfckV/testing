@@ -8,8 +8,8 @@
     fetch(url)
       .then(response => response.json())
       .then(data => {
-        const quoteTitle = document.createElement('div');
-        const quoteAuthor = document.createElement('div');
+        const quoteTitle = document.createElement('h3');
+        const quoteAuthor = document.createElement('span');
         const quote = document.createElement('li');
 
         quoteTitle.classList.add('quote__title');

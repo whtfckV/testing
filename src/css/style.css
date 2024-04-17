@@ -385,6 +385,7 @@ body {
 .quote__title {
   font-weight: 400;
   font-size: 40px;
+  margin: 0;
   margin-bottom: 19px;
 }
 
